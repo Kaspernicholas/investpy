@@ -9,7 +9,7 @@ from random import randint, sample
 import pandas as pd
 import pkg_resources
 import pytz
-import requests
+from curl_cffi import requests
 from lxml.html import fromstring
 from unidecode import unidecode
 
@@ -355,7 +355,7 @@ def get_currency_cross_recent_data(
 
     url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-    req = requests.post(url, headers=head, data=params)
+    req = requests.post(url, headers=head, data=params, impersonate="chrome")
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -668,7 +668,7 @@ def get_currency_cross_historical_data(
 
         url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-        req = requests.post(url, headers=head, data=params)
+        req = requests.post(url, headers=head, data=params, impersonate="chrome")
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -864,7 +864,7 @@ def get_currency_cross_information(currency_cross, as_json=False):
         "Connection": "keep-alive",
     }
 
-    req = requests.get(url, headers=head)
+    req = requests.get(url, headers=head, impersonate="chrome")
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -1015,7 +1015,7 @@ def get_currency_crosses_overview(currency, as_json=False, n_results=100):
 
     url = "https://www.investing.com/currencies/Service/ChangeCurrency"
 
-    req = requests.get(url, headers=head, params=params)
+    req = requests.get(url, headers=head, params=params, impersonate="chrome")
 
     if req.status_code != 200:
         raise ConnectionError(

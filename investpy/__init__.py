@@ -106,6 +106,7 @@ from .stocks import (
     get_stocks_list,
     get_stocks_overview,
     search_stocks,
+    get_stock_financial_summary_extended,
 )
 from .technical import moving_averages, pivot_points, technical_indicators
 

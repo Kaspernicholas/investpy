@@ -9,7 +9,7 @@ from random import randint
 import pandas as pd
 import pkg_resources
 import pytz
-import requests
+from curl_cffi import requests
 from lxml.html import fromstring
 from unidecode import unidecode
 
@@ -299,7 +299,7 @@ def get_bond_recent_data(bond, as_json=False, order="ascending", interval="Daily
 
     url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-    req = requests.post(url, headers=head, data=params)
+    req = requests.post(url, headers=head, data=params, impersonate="chrome")
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -590,7 +590,7 @@ def get_bond_historical_data(
 
         url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-        req = requests.post(url, headers=head, data=params)
+        req = requests.post(url, headers=head, data=params, impersonate="chrome")
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -775,7 +775,7 @@ def get_bond_information(bond, as_json=False):
         "Connection": "keep-alive",
     }
 
-    req = requests.get(url, headers=head)
+    req = requests.get(url, headers=head, impersonate="chrome")
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -958,7 +958,7 @@ def get_bonds_overview(country, as_json=False):
 
     url = "https://www.investing.com/rates-bonds/" + country + "-government-bonds"
 
-    req = requests.get(url, headers=head)
+    req = requests.get(url, headers=head, impersonate="chrome")
 
     if req.status_code != 200:
         raise ConnectionError(
