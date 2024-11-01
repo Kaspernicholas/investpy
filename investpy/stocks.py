@@ -8,9 +8,10 @@ from random import randint
 import pandas as pd
 import pkg_resources
 import pytz
-import requests
+from curl_cffi import requests
 from lxml.html import fromstring
 from unidecode import unidecode
+from bs4 import BeautifulSoup
 
 from .data.stocks_data import (
     stock_countries_as_list,
@@ -658,7 +659,7 @@ def get_stock_historical_data(
 
         url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-        req = requests.post(url, headers=head, data=params)
+        req = requests.post(url, headers=head, data=params, impersonate="chrome")
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -891,7 +892,7 @@ def get_stock_company_profile(stock, country="spain", language="english"):
             "Connection": "keep-alive",
         }
 
-        req = requests.get(url, headers=head)
+        req = requests.get(url, headers=head, impersonate="chrome")
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -1067,9 +1068,9 @@ def get_stock_dividends(stock, country):
             last_timestamp = path_[-1].get("event_timestamp")
 
             for elements_ in path_:
-                dividend_date = (
-                    dividend_value
-                ) = dividend_type = dividend_payment_date = dividend_yield = None
+                dividend_date = dividend_value = dividend_type = (
+                    dividend_payment_date
+                ) = dividend_yield = None
                 for element_ in elements_.xpath(".//td"):
                     if element_.get("class"):
                         if element_.get("class").__contains__("first"):
@@ -1147,11 +1148,9 @@ def get_stock_dividends(stock, country):
                     last_timestamp = path_[-1].get("event_timestamp")
 
                     for elements_ in path_:
-                        dividend_date = (
-                            dividend_value
-                        ) = (
-                            dividend_type
-                        ) = dividend_payment_date = dividend_yield = None
+                        dividend_date = dividend_value = dividend_type = (
+                            dividend_payment_date
+                        ) = dividend_yield = None
                         for element_ in elements_.xpath(".//td"):
                             if element_.get("class"):
                                 if element_.get("class").__contains__("first"):
@@ -1320,7 +1319,7 @@ def get_stock_information(stock, country, as_json=False):
         "Connection": "keep-alive",
     }
 
-    req = requests.get(url, headers=headers)
+    req = requests.get(url, headers=headers, impersonate="chrome")
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -1715,7 +1714,7 @@ def get_stock_financial_summary(
 
     url = "https://www.investing.com/instruments/Financials/changesummaryreporttypeajax"
 
-    req = requests.get(url, params=params, headers=headers)
+    req = requests.get(url, params=params, headers=headers, impersonate="chrome")
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -1751,6 +1750,216 @@ def get_stock_financial_summary(
     dataset.set_index("Date", inplace=True)
 
     return dataset
+
+
+def get_stock_financial_summary_extended(
+    stock, country, summary_type="income_statement", period="annual"
+):
+    """
+    This function retrieves the financial summary of the introduced stock (by symbol) from the introduced
+    country, based on the summary_type value this function returns a different type of financial summary, so
+    that the output format of this function depends on its type. Additionally, the period of the retrieved
+    financial summary type can be specified.
+
+    Args:
+        stock (:obj:`str`): symbol of the stock to retrieve its financial summary.
+        country (:obj:`str`): name of the country from where the introduced stock symbol is.
+        summary_type (:obj:`str`, optional):
+            type of the financial summary table to retrieve, default value is `income_statement`, but all the
+            available types are: `income_statement`, `cash_flow_statement` and `balance_sheet`.
+        period (:obj:`str`, optional):
+            period range of the financial summary table to rertieve, detault value is `annual`, but all the
+            available periods are: `annual` and `quarterly`.
+
+    Returns:
+        :obj:`pandas.DataFrame` - financial_summary:
+            The resulting :obj:`pandas.DataFrame` contains the table of the requested financial summary from the
+            introduced stock, so the fields/column names may vary, since it depends on the summary_type introduced.
+            So on, the returned table will have the following format/structure::
+
+                Date || Field 1 | Field 2 | ... | Field N
+                -----||---------|---------|-----|---------
+                xxxx || xxxxxxx | xxxxxxx | xxx | xxxxxxx
+
+    Raises:
+        ValueError: raised if any of the introduced parameters is not valid or errored.
+        FileNotFoundError: raised if the stocks.csv file was not found.
+        IOError: raised if the stocks.csv file could not be read.
+        ConnectionError: raised if the connection to Investing.com errored or could not be established.
+        RuntimeError: raised if any error occurred while running the function.
+
+    Examples:
+        >>> data = investpy.get_stock_financial_summary(stock='AAPL', country='United States', summary_type='income_statement', period='annual')
+        >>> data.head()
+                    Total Revenue  Gross Profit  Operating Income  Net Income
+        Date
+        2019-09-28         260174         98392             63930       55256
+        2018-09-29         265595        101839             70898       59531
+        2017-09-30         229234         88186             61344       48351
+        2016-09-24         215639         84263             60024       45687
+
+    """
+
+    report_dict = {
+        "income_statement": "INC",
+        "balance_sheet": "BAL",
+        "cash_flow_statement": "CAS",
+    }
+
+    if not stock:
+        raise ValueError(
+            "ERR#0013: stock parameter is mandatory and must be a valid stock symbol."
+        )
+
+    if not isinstance(stock, str):
+        raise ValueError("ERR#0027: stock argument needs to be a str.")
+
+    if country is None:
+        raise ValueError("ERR#0039: country can not be None, it should be a str.")
+
+    if not isinstance(country, str):
+        raise ValueError("ERR#0025: specified country value not valid.")
+
+    if summary_type is None:
+        raise ValueError("ERR#0132: summary_type can not be None, it should be a str.")
+
+    if not isinstance(summary_type, str):
+        raise ValueError("ERR#0133: summary_type value not valid.")
+
+    summary_type = unidecode(summary_type.strip().lower())
+
+    if summary_type not in report_dict.keys():
+        raise ValueError(
+            "ERR#0134: introduced summary_type is not valid, since available values"
+            " are: " + ", ".join(report_dict.keys())
+        )
+
+    if period is None:
+        raise ValueError("ERR#0135: period can not be None, it should be a str.")
+
+    if not isinstance(period, str):
+        raise ValueError("ERR#0136: period value not valid.")
+
+    period = unidecode(period.strip().lower())
+
+    if period not in cst.FINANCIAL_SUMMARY_PERIODS.keys():
+        raise ValueError(
+            "ERR#0137: introduced period is not valid, since available values are: "
+            + ", ".join(cst.FINANCIAL_SUMMARY_PERIODS.keys())
+        )
+
+    resource_package = "investpy"
+    resource_path = "/".join((("resources", "stocks.csv")))
+    if pkg_resources.resource_exists(resource_package, resource_path):
+        stocks = pd.read_csv(
+            pkg_resources.resource_filename(resource_package, resource_path),
+            keep_default_na=False,
+        )
+    else:
+        raise FileNotFoundError("ERR#0056: stocks file not found or errored.")
+
+    if stocks is None:
+        raise IOError("ERR#0001: stocks object not found or unable to retrieve.")
+
+    country = unidecode(country.strip().lower())
+
+    if country not in get_stock_countries():
+        raise RuntimeError(
+            "ERR#0034: country "
+            + country.lower()
+            + " not found, check if it is correct."
+        )
+
+    stocks = stocks[stocks["country"] == country]
+
+    stock = unidecode(stock.strip().lower())
+
+    if stock not in list(stocks["symbol"].apply(unidecode).str.lower()):
+        raise RuntimeError(
+            "ERR#0018: stock " + stock + " not found, check if it is correct."
+        )
+
+    id_ = stocks.loc[
+        (stocks["symbol"].apply(unidecode).str.lower() == stock).idxmax(), "id"
+    ]
+
+    headers = {
+        "User-Agent": random_user_agent(),
+        "X-Requested-With": "XMLHttpRequest",
+        "Accept": "text/html",
+        "Accept-Encoding": "gzip, deflate",
+        "Connection": "keep-alive",
+    }
+
+    params = {
+        "action": "change_report_type",
+        "pair_ID": id_,
+        "report_type": report_dict[summary_type],
+        # "pid": id_,
+        # "financial_id": id_,
+        # "ratios_id": id_,
+        "period_type": cst.FINANCIAL_SUMMARY_PERIODS[period],
+    }
+
+    # url = "https://www.investing.com/instruments/Financials/changesummaryreporttypeajax"
+    url = "https://www.investing.com/instruments/Financials/changereporttypeajax"
+    req = requests.get(url, params=params, headers=headers, impersonate="chrome")
+
+    if req.status_code != 200:
+        raise ConnectionError(
+            "ERR#0015: error " + str(req.status_code) + ", try again later."
+        )
+
+        # Function to parse table
+
+    def parse_table(table):
+        rows = []
+        for tr in table.find_all("tr"):
+            # Skip rows that are headers or contain nested tables directly
+            if tr.find("th") is not None or tr.find("table") is not None:
+                continue
+            cells = tr.find_all(["td", "th"])
+            row_data = [cell.get_text(strip=True) for cell in cells]
+            rows.append(row_data)
+        return rows
+
+    soup = BeautifulSoup(req.text, "html.parser")
+    # Initialize a list to hold all rows of data, including nested table rows
+    all_rows = []
+    # Process header row separately to maintain order at the top of CSV
+    header_row = soup.find("tr", class_="alignBottom")
+    headers = ["Period Ending"]  # Initial column for 'Period Ending'
+    # Add dates from header row
+    headers += [
+        header.get_text(strip=True) for header in header_row.find_all("th")[1:]
+    ]  # Skip the first 'Period Ending' header
+    headers[1:] = [
+        header[:4] + "/" + header[-2:] + "/" + header[4:6] for header in headers[1:]
+    ]
+    all_rows.append(headers)
+
+    # Extract data rows from the main table, skipping the header row
+    data_rows = soup.find_all("tr")[1:]  # Skip header row
+    for row in data_rows:
+        # If the row contains a nested table, parse the nested table
+        if row.find("table"):
+            nested_table = row.find("table")
+            nested_rows = parse_table(nested_table)
+            all_rows.extend(nested_rows)  # Add nested table rows to the overall list
+        else:
+            cells = row.find_all(["td", "th"])
+            row_data = [cell.get_text(strip=True) for cell in cells]
+            all_rows.append(row_data)
+
+    columns = all_rows[0]
+    # Extract data rows from the remaining sublists
+    rows = all_rows[1:]
+    # Create the DataFrame
+    df = pd.DataFrame(rows, columns=columns)
+    # Set the first column as the DataFrame's index
+    df.set_index(columns[0], inplace=True)
+
+    return df
 
 
 def search_stocks(by, value):
