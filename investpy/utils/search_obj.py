@@ -7,7 +7,7 @@ from random import randint
 
 import pandas as pd
 import pytz
-import requests
+from curl_cffi import requests
 from lxml.html import fromstring
 
 from .constant import FUNDS_INTERVAL_FILTERS, INTERVAL_FILTERS, OUTDATED2UPDATED
@@ -551,7 +551,7 @@ class SearchObj(object):
 
         url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-        req = requests.post(url, headers=headers, data=params)
+        req = requests.post(url, headers=headers, data=params, impersonate="chrome")
 
         if req.status_code != 200:
             raise ConnectionError(

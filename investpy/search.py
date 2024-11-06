@@ -1,7 +1,7 @@
 # Copyright 2018-2021 Alvaro Bartolome, alvarobartt @ GitHub
 # See LICENSE for details.
 
-import requests
+from curl_cffi import requests
 from unidecode import unidecode
 
 from .utils.constant import COUNTRY_FILTERS, FLAG_FILTERS, PAIR_FILTERS, PRODUCT_FILTERS
@@ -154,7 +154,7 @@ def search_quotes(text, products=None, countries=None, n_results=None):
     user_limit = True if n_results is not None else False
 
     while True:
-        req = requests.post(url, headers=headers, data=params)
+        req = requests.post(url, headers=headers, data=params, impersonate="chrome")
 
         if req.status_code != 200:
             raise ConnectionError(
