@@ -211,7 +211,7 @@ class SearchObj(object):
             "Connection": "keep-alive",
         }
 
-        req = requests.get(url, headers=headers)
+        req = requests.get(url, headers=headers, impersonate="chrome")
 
         if req.status_code != 200:
             raise ConnectionError(
