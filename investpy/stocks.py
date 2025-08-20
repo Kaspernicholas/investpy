@@ -1753,7 +1753,7 @@ def get_stock_financial_summary(
 
 
 def get_stock_financial_summary_extended(
-    stock, country, summary_type="income_statement", period="annual"
+    stock, country, summary_type="income_statement", period="annual", id=0
 ):
     """
     This function retrieves the financial summary of the introduced stock (by symbol) from the introduced
@@ -1848,40 +1848,43 @@ def get_stock_financial_summary_extended(
             + ", ".join(cst.FINANCIAL_SUMMARY_PERIODS.keys())
         )
 
-    resource_package = "investpy"
-    resource_path = "/".join((("resources", "stocks.csv")))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        stocks = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
+    if id == 0:
+        resource_package = "investpy"
+        resource_path = "/".join((("resources", "stocks.csv")))
+        if pkg_resources.resource_exists(resource_package, resource_path):
+            stocks = pd.read_csv(
+                pkg_resources.resource_filename(resource_package, resource_path),
+                keep_default_na=False,
+            )
+        else:
+            raise FileNotFoundError("ERR#0056: stocks file not found or errored.")
+
+        if stocks is None:
+            raise IOError("ERR#0001: stocks object not found or unable to retrieve.")
+
+        country = unidecode(country.strip().lower())
+
+        if country not in get_stock_countries():
+            raise RuntimeError(
+                "ERR#0034: country "
+                + country.lower()
+                + " not found, check if it is correct."
+            )
+
+        stocks = stocks[stocks["country"] == country]
+
+        stock = unidecode(stock.strip().lower())
+
+        if stock not in list(stocks["symbol"].apply(unidecode).str.lower()):
+            raise RuntimeError(
+                "ERR#0018: stock " + stock + " not found, check if it is correct."
+            )
+
+        id_ = stocks.loc[
+            (stocks["symbol"].apply(unidecode).str.lower() == stock).idxmax(), "id"
+        ]
     else:
-        raise FileNotFoundError("ERR#0056: stocks file not found or errored.")
-
-    if stocks is None:
-        raise IOError("ERR#0001: stocks object not found or unable to retrieve.")
-
-    country = unidecode(country.strip().lower())
-
-    if country not in get_stock_countries():
-        raise RuntimeError(
-            "ERR#0034: country "
-            + country.lower()
-            + " not found, check if it is correct."
-        )
-
-    stocks = stocks[stocks["country"] == country]
-
-    stock = unidecode(stock.strip().lower())
-
-    if stock not in list(stocks["symbol"].apply(unidecode).str.lower()):
-        raise RuntimeError(
-            "ERR#0018: stock " + stock + " not found, check if it is correct."
-        )
-
-    id_ = stocks.loc[
-        (stocks["symbol"].apply(unidecode).str.lower() == stock).idxmax(), "id"
-    ]
+        id_ = id
 
     headers = {
         "User-Agent": random_user_agent(),
