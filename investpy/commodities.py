@@ -9,7 +9,7 @@ from random import randint
 import pandas as pd
 import pkg_resources
 import pytz
-import requests
+from curl_cffi import requests
 from lxml.html import fromstring
 from unidecode import unidecode
 
@@ -352,7 +352,7 @@ def get_commodity_recent_data(
 
     url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-    req = requests.post(url, headers=head, data=params)
+    req = requests.post(url, headers=head, data=params, impersonate="chrome")
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -703,7 +703,7 @@ def get_commodity_historical_data(
 
         url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-        req = requests.post(url, headers=head, data=params)
+        req = requests.post(url, headers=head, data=params, impersonate="chrome")
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -934,7 +934,7 @@ def get_commodity_information(commodity, country=None, as_json=False):
         "Connection": "keep-alive",
     }
 
-    req = requests.get(url, headers=head)
+    req = requests.get(url, headers=head, impersonate="chrome")
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -1105,7 +1105,7 @@ def get_commodities_overview(group, as_json=False, n_results=100):
 
     url = "https://www.investing.com/commodities/" + group
 
-    req = requests.get(url, headers=head)
+    req = requests.get(url, headers=head, impersonate="chrome")
 
     if req.status_code != 200:
         raise ConnectionError(
