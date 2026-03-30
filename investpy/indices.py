@@ -322,7 +322,7 @@ def get_index_recent_data(
 
     url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-    req = requests.post(url, headers=head, data=params, impersonate="chrome")
+    req = requests.post(url, headers=head, data=params, impersonate="chrome136")
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -643,7 +643,7 @@ def get_index_historical_data(
 
         url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-        req = requests.post(url, headers=head, data=params, impersonate="chrome")
+        req = requests.post(url, headers=head, data=params, impersonate="chrome136")
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -841,7 +841,7 @@ def get_index_information(index, country, as_json=False):
         "Connection": "keep-alive",
     }
 
-    req = requests.get(url, headers=head, impersonate="chrome")
+    req = requests.get(url, headers=head, impersonate="chrome136")
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -1007,7 +1007,7 @@ def get_indices_overview(country, as_json=False, n_results=100):
         + "-indices?&majorIndices=on&primarySectors=on&additionalIndices=on&otherIndices=on"
     )
 
-    req = requests.get(url, headers=head, impersonate="chrome")
+    req = requests.get(url, headers=head, impersonate="chrome136")
 
     if req.status_code != 200:
         raise ConnectionError(

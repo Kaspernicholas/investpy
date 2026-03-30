@@ -659,7 +659,7 @@ def get_stock_historical_data(
 
         url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-        req = requests.post(url, headers=head, data=params, impersonate="chrome")
+        req = requests.post(url, headers=head, data=params, impersonate="chrome136")
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -892,7 +892,7 @@ def get_stock_company_profile(stock, country="spain", language="english"):
             "Connection": "keep-alive",
         }
 
-        req = requests.get(url, headers=head, impersonate="chrome")
+        req = requests.get(url, headers=head, impersonate="chrome136")
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -934,7 +934,7 @@ def get_stock_company_profile(stock, country="spain", language="english"):
             "Connection": "keep-alive",
         }
 
-        req = requests.get(url, headers=head)
+        req = requests.get(url, headers=head, impersonate="chrome136")
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -1319,7 +1319,7 @@ def get_stock_information(stock, country, as_json=False):
         "Connection": "keep-alive",
     }
 
-    req = requests.get(url, headers=headers, impersonate="chrome")
+    req = requests.get(url, headers=headers, impersonate="chrome136")
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -1714,7 +1714,7 @@ def get_stock_financial_summary(
 
     url = "https://www.investing.com/instruments/Financials/changesummaryreporttypeajax"
 
-    req = requests.get(url, params=params, headers=headers, impersonate="chrome")
+    req = requests.get(url, params=params, headers=headers, impersonate="chrome136")
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -1906,7 +1906,7 @@ def get_stock_financial_summary_extended(
 
     # url = "https://www.investing.com/instruments/Financials/changesummaryreporttypeajax"
     url = "https://www.investing.com/instruments/Financials/changereporttypeajax"
-    req = requests.get(url, params=params, headers=headers, impersonate="chrome")
+    req = requests.get(url, params=params, headers=headers, impersonate="chrome136")
 
     if req.status_code != 200:
         raise ConnectionError(

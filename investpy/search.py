@@ -154,7 +154,7 @@ def search_quotes(text, products=None, countries=None, n_results=None):
     user_limit = True if n_results is not None else False
 
     while True:
-        req = requests.post(url, headers=headers, data=params, impersonate="chrome")
+        req = requests.post(url, headers=headers, data=params, impersonate="chrome136")
 
         if req.status_code != 200:
             raise ConnectionError(

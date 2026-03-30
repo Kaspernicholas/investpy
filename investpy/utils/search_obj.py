@@ -211,7 +211,7 @@ class SearchObj(object):
             "Connection": "keep-alive",
         }
 
-        req = requests.get(url, headers=headers, impersonate="chrome")
+        req = requests.get(url, headers=headers, impersonate="chrome136")
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -551,7 +551,7 @@ class SearchObj(object):
 
         url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-        req = requests.post(url, headers=headers, data=params, impersonate="chrome")
+        req = requests.post(url, headers=headers, data=params, impersonate="chrome136")
 
         if req.status_code != 200:
             raise ConnectionError(

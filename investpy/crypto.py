@@ -281,7 +281,7 @@ def get_crypto_recent_data(crypto, as_json=False, order="ascending", interval="D
 
     url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-    req = requests.post(url, headers=head, data=params, impersonate="chrome")
+    req = requests.post(url, headers=head, data=params, impersonate="chrome136")
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -592,7 +592,7 @@ def get_crypto_historical_data(
 
         url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-        req = requests.post(url, headers=head, data=params, impersonate="chrome")
+        req = requests.post(url, headers=head, data=params, impersonate="chrome136")
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -791,7 +791,7 @@ def get_crypto_information(crypto, as_json=False):
         "Connection": "keep-alive",
     }
 
-    req = requests.get(url, headers=head, impersonate="chrome")
+    req = requests.get(url, headers=head, impersonate="chrome136")
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -900,7 +900,7 @@ def get_cryptos_overview(as_json=False, n_results=100):
 
     url = "https://www.investing.com/crypto/currencies"
 
-    req = requests.get(url, headers=header, impersonate="chrome")
+    req = requests.get(url, headers=header, impersonate="chrome136")
 
     root = fromstring(req.text)
     table = root.xpath(".//table[contains(@class, 'allCryptoTlb')]/tbody/tr")
