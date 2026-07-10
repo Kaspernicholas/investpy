@@ -6,7 +6,6 @@ from datetime import date, datetime, timedelta
 from random import randint
 
 import pandas as pd
-import pkg_resources
 import pytz
 from curl_cffi import requests
 from lxml.html import fromstring
@@ -22,6 +21,7 @@ from .data.stocks_data import (
 from .utils import constant as cst
 from .utils.data import Data
 from .utils.extra import random_user_agent
+from investpy.utils.resources import load_registry
 
 
 def get_stocks(country=None):
@@ -261,15 +261,7 @@ def get_stock_recent_data(
             " 'Daily', 'Weekly' or 'Monthly'."
         )
 
-    resource_package = "investpy"
-    resource_path = "/".join((("resources", "stocks.csv")))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        stocks = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0056: stocks file not found or errored.")
+    stocks = load_registry("stocks.csv")
 
     if stocks is None:
         raise IOError("ERR#0001: stocks object not found or unable to retrieve.")
@@ -585,15 +577,7 @@ def get_stock_historical_data(
 
     data_flag = False
 
-    resource_package = "investpy"
-    resource_path = "/".join((("resources", "stocks.csv")))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        stocks = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0056: stocks file not found or errored.")
+    stocks = load_registry("stocks.csv")
 
     if stocks is None:
         raise IOError("ERR#0001: stocks object not found or unable to retrieve.")
@@ -851,15 +835,7 @@ def get_stock_company_profile(stock, country="spain", language="english"):
 
     selected_source = available_sources[language]
 
-    resource_package = "investpy"
-    resource_path = "/".join((("resources", "stocks.csv")))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        stocks = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0056: stocks file not found or errored.")
+    stocks = load_registry("stocks.csv")
 
     if stocks is None:
         raise IOError("ERR#0001: stocks object not found or unable to retrieve.")
@@ -992,15 +968,7 @@ def get_stock_dividends(stock, country):
     if country is not None and not isinstance(country, str):
         raise ValueError("ERR#0025: specified country value not valid.")
 
-    resource_package = "investpy"
-    resource_path = "/".join((("resources", "stocks.csv")))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        stocks = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0056: stocks file not found or errored.")
+    stocks = load_registry("stocks.csv")
 
     if stocks is None:
         raise IOError("ERR#0001: stocks object not found or unable to retrieve.")
@@ -1270,15 +1238,7 @@ def get_stock_information(stock, country, as_json=False):
             "ERR#0002: as_json argument can just be True or False, bool type."
         )
 
-    resource_package = "investpy"
-    resource_path = "/".join((("resources", "stocks.csv")))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        stocks = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0056: stocks file not found or errored.")
+    stocks = load_registry("stocks.csv")
 
     if stocks is None:
         raise IOError("ERR#0001: stocks object not found or unable to retrieve.")
@@ -1450,15 +1410,7 @@ def get_stocks_overview(country, as_json=False, n_results=100):
             "ERR#0089: n_results argument should be an integer between 1 and 1000."
         )
 
-    resource_package = "investpy"
-    resource_path = "/".join((("resources", "stocks.csv")))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        stocks = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0056: stocks file not found or errored.")
+    stocks = load_registry("stocks.csv")
 
     if stocks is None:
         raise IOError("ERR#0001: stocks object not found or unable to retrieve.")
@@ -1661,15 +1613,7 @@ def get_stock_financial_summary(
             + ", ".join(cst.FINANCIAL_SUMMARY_PERIODS.keys())
         )
 
-    resource_package = "investpy"
-    resource_path = "/".join((("resources", "stocks.csv")))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        stocks = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0056: stocks file not found or errored.")
+    stocks = load_registry("stocks.csv")
 
     if stocks is None:
         raise IOError("ERR#0001: stocks object not found or unable to retrieve.")
@@ -1849,15 +1793,7 @@ def get_stock_financial_summary_extended(
         )
 
     if id == 0:
-        resource_package = "investpy"
-        resource_path = "/".join((("resources", "stocks.csv")))
-        if pkg_resources.resource_exists(resource_package, resource_path):
-            stocks = pd.read_csv(
-                pkg_resources.resource_filename(resource_package, resource_path),
-                keep_default_na=False,
-            )
-        else:
-            raise FileNotFoundError("ERR#0056: stocks file not found or errored.")
+        stocks = load_registry("stocks.csv")
 
         if stocks is None:
             raise IOError("ERR#0001: stocks object not found or unable to retrieve.")
@@ -2010,15 +1946,7 @@ def search_stocks(by, value):
             "ERR#0017: the introduced value to search is mandatory and should be a str."
         )
 
-    resource_package = "investpy"
-    resource_path = "/".join((("resources", "stocks.csv")))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        stocks = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0056: stocks file not found or errored.")
+    stocks = load_registry("stocks.csv")
 
     if stocks is None:
         raise IOError("ERR#0001: stocks object not found or unable to retrieve.")

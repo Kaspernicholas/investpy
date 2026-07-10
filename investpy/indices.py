@@ -6,7 +6,6 @@ from datetime import date, datetime, timedelta
 from random import randint
 
 import pandas as pd
-import pkg_resources
 import pytz
 from curl_cffi import requests
 from lxml.html import fromstring
@@ -20,6 +19,7 @@ from .data.indices_data import (
 )
 from .utils.data import Data
 from .utils.extra import random_user_agent
+from investpy.utils.resources import load_registry
 
 
 def get_indices(country=None):
@@ -257,15 +257,7 @@ def get_index_recent_data(
             " 'Daily', 'Weekly' or 'Monthly'."
         )
 
-    resource_package = "investpy"
-    resource_path = "/".join(("resources", "indices.csv"))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        indices = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0059: indices file not found or errored.")
+    indices = load_registry("indices.csv")
 
     if indices is None:
         raise IOError("ERR#0037: indices not found or unable to retrieve.")
@@ -571,15 +563,7 @@ def get_index_historical_data(
 
     data_flag = False
 
-    resource_package = "investpy"
-    resource_path = "/".join(("resources", "indices.csv"))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        indices = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0059: indices file not found or errored.")
+    indices = load_registry("indices.csv")
 
     if indices is None:
         raise IOError("ERR#0037: indices not found or unable to retrieve.")
@@ -795,15 +779,7 @@ def get_index_information(index, country, as_json=False):
             "ERR#0002: as_json argument can just be True or False, bool type."
         )
 
-    resource_package = "investpy"
-    resource_path = "/".join(("resources", "indices.csv"))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        indices = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0059: indices file not found or errored.")
+    indices = load_registry("indices.csv")
 
     if indices is None:
         raise IOError("ERR#0037: indices not found or unable to retrieve.")
@@ -966,15 +942,7 @@ def get_indices_overview(country, as_json=False, n_results=100):
             "ERR#0089: n_results argument should be an integer between 1 and 1000."
         )
 
-    resource_package = "investpy"
-    resource_path = "/".join(("resources", "indices.csv"))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        indices = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0059: indices file not found or errored.")
+    indices = load_registry("indices.csv")
 
     if indices is None:
         raise IOError("ERR#0037: indices not found or unable to retrieve.")
@@ -1121,15 +1089,7 @@ def search_indices(by, value):
             "ERR#0017: the introduced value to search is mandatory and should be a str."
         )
 
-    resource_package = "investpy"
-    resource_path = "/".join(("resources", "indices.csv"))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        indices = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0059: indices file not found or errored.")
+    indices = load_registry("indices.csv")
 
     if indices is None:
         raise IOError("ERR#0037: indices not found or unable to retrieve.")

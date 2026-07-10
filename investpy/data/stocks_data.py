@@ -4,10 +4,10 @@
 import json
 
 import pandas as pd
-import pkg_resources
 from unidecode import unidecode
 
 from ..utils import constant as cst
+from ..utils.resources import load_registry
 
 
 def stocks_as_df(country=None):
@@ -43,15 +43,7 @@ def stocks_as_df(country=None):
     if country is not None and not isinstance(country, str):
         raise ValueError("ERR#0025: specified country value not valid.")
 
-    resource_package = "investpy"
-    resource_path = "/".join((("resources", "stocks.csv")))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        stocks = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0056: stocks file not found or errored.")
+    stocks = load_registry("stocks.csv")
 
     if stocks is None:
         raise IOError("ERR#0001: stocks list not found or unable to retrieve.")
@@ -108,15 +100,7 @@ def stocks_as_list(country=None):
     if country is not None and not isinstance(country, str):
         raise ValueError("ERR#0025: specified country value not valid.")
 
-    resource_package = "investpy"
-    resource_path = "/".join((("resources", "stocks.csv")))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        stocks = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0056: stocks file not found or errored.")
+    stocks = load_registry("stocks.csv")
 
     if stocks is None:
         raise IOError("ERR#0001: stocks list not found or unable to retrieve.")
@@ -183,15 +167,7 @@ def stocks_as_dict(country=None, columns=None, as_json=False):
             "ERR#0002: as_json argument can just be True or False, bool type."
         )
 
-    resource_package = "investpy"
-    resource_path = "/".join((("resources", "stocks.csv")))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        stocks = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0056: stocks file not found or errored.")
+    stocks = load_registry("stocks.csv")
 
     if stocks is None:
         raise IOError("ERR#0001: stocks list not found or unable to retrieve.")

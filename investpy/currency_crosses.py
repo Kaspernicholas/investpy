@@ -7,7 +7,6 @@ from datetime import date, datetime, timedelta
 from random import randint, sample
 
 import pandas as pd
-import pkg_resources
 import pytz
 from curl_cffi import requests
 from lxml.html import fromstring
@@ -22,6 +21,7 @@ from .data.currency_crosses_data import (
 from .utils import constant as cst
 from .utils.data import Data
 from .utils.extra import random_user_agent
+from investpy.utils.resources import load_registry
 
 
 def get_currency_crosses(base=None, second=None):
@@ -290,15 +290,7 @@ def get_currency_cross_recent_data(
             " 'Daily', 'Weekly' or 'Monthly'."
         )
 
-    resource_package = "investpy"
-    resource_path = "/".join(("resources", "currency_crosses.csv"))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        currency_crosses = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0060: currency_crosses file not found or errored.")
+    currency_crosses = load_registry("currency_crosses.csv")
 
     if currency_crosses is None:
         raise IOError("ERR#0050: currency_crosses not found or unable to retrieve.")
@@ -596,15 +588,7 @@ def get_currency_cross_historical_data(
 
     data_flag = False
 
-    resource_package = "investpy"
-    resource_path = "/".join(("resources", "currency_crosses.csv"))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        currency_crosses = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0060: currency_crosses file not found or errored.")
+    currency_crosses = load_registry("currency_crosses.csv")
 
     if currency_crosses is None:
         raise IOError("ERR#0050: currency_crosses not found or unable to retrieve.")
@@ -817,15 +801,7 @@ def get_currency_cross_information(currency_cross, as_json=False):
             "ERR#0002: as_json argument can just be True or False, bool type."
         )
 
-    resource_package = "investpy"
-    resource_path = "/".join(("resources", "currency_crosses.csv"))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        currency_crosses = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0060: currency_crosses file not found or errored.")
+    currency_crosses = load_registry("currency_crosses.csv")
 
     if currency_crosses is None:
         raise IOError("ERR#0050: currency_crosses not found or unable to retrieve.")
@@ -1131,15 +1107,7 @@ def search_currency_crosses(by, value):
             "ERR#0017: the introduced value to search is mandatory and should be a str."
         )
 
-    resource_package = "investpy"
-    resource_path = "/".join(("resources", "currency_crosses.csv"))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        currency_crosses = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0060: currency_crosses file not found or errored.")
+    currency_crosses = load_registry("currency_crosses.csv")
 
     if currency_crosses is None:
         raise IOError("ERR#0050: currency_crosses not found or unable to retrieve.")

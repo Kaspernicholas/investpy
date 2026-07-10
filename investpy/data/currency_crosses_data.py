@@ -4,10 +4,10 @@
 import json
 
 import pandas as pd
-import pkg_resources
 from unidecode import unidecode
 
 from ..utils import constant as cst
+from ..utils.resources import load_registry
 
 
 def currency_crosses_as_df(base=None, second=None):
@@ -53,15 +53,7 @@ def currency_crosses_as_df(base=None, second=None):
     if second is not None and not isinstance(second, str):
         raise ValueError("ERR#0051: specified second currency value is not valid.")
 
-    resource_package = "investpy"
-    resource_path = "/".join(("resources", "currency_crosses.csv"))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        currency_crosses = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0060: currency_crosses file not found or errored.")
+    currency_crosses = load_registry("currency_crosses.csv")
 
     if currency_crosses is None:
         raise IOError("ERR#0050: currency_crosses not found or unable to retrieve.")
@@ -170,15 +162,7 @@ def currency_crosses_as_list(base=None, second=None):
     if second is not None and not isinstance(second, str):
         raise ValueError("ERR#0051: specified second currency value is not valid.")
 
-    resource_package = "investpy"
-    resource_path = "/".join(("resources", "currency_crosses.csv"))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        currency_crosses = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0060: currency_crosses file not found or errored.")
+    currency_crosses = load_registry("currency_crosses.csv")
 
     if currency_crosses is None:
         raise IOError("ERR#0050: currency_crosses not found or unable to retrieve.")
@@ -301,15 +285,7 @@ def currency_crosses_as_dict(base=None, second=None, columns=None, as_json=False
             "ERR#0002: as_json argument can just be True or False, bool type."
         )
 
-    resource_package = "investpy"
-    resource_path = "/".join(("resources", "currency_crosses.csv"))
-    if pkg_resources.resource_exists(resource_package, resource_path):
-        currency_crosses = pd.read_csv(
-            pkg_resources.resource_filename(resource_package, resource_path),
-            keep_default_na=False,
-        )
-    else:
-        raise FileNotFoundError("ERR#0060: currency_crosses file not found or errored.")
+    currency_crosses = load_registry("currency_crosses.csv")
 
     if currency_crosses is None:
         raise IOError("ERR#0050: currency_crosses not found or unable to retrieve.")

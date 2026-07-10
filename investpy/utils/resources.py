@@ -29,5 +29,12 @@ def load_registry(filename):
     custom = pd.read_csv(
         pkg_resources.resource_filename(_PACKAGE, custom_path), keep_default_na=False
     )
+    # A column that is all-numeric in the (small) custom overlay infers a numeric
+    # dtype even when the base registry's same column is string-typed (e.g. Chinese
+    # A-share tickers like "688256"). Align to the base dtype so merged values are
+    # consistent and don't leak int objects into what callers expect to be strings.
+    for column in base.columns:
+        if column in custom.columns and base[column].dtype != custom[column].dtype:
+            custom[column] = custom[column].astype(base[column].dtype)
     merged = pd.concat([base, custom], ignore_index=True)
     return merged.drop_duplicates(subset=["id"], keep="last").reset_index(drop=True)
