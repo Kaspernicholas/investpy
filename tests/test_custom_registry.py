@@ -14,6 +14,18 @@ def test_load_registry_dedupes_on_id_keeping_custom():
     assert df["id"].duplicated().sum() == 0
 
 
+def test_stock_list_symbols_are_strings():
+    symbols = investpy.get_stocks_list()
+    assert all(isinstance(symbol, str) for symbol in symbols)
+    assert "688256" in investpy.get_stocks_list(country="china")
+
+
+def test_index_countries_include_overlay():
+    from investpy.utils.resources import load_registry
+    indices = load_registry("indices.csv")
+    assert set(indices["country"]) <= set(investpy.get_index_countries())
+
+
 def test_list_functions_include_custom_rows():
     assert "XPT/USD" in investpy.get_currency_crosses_list()
     assert "XPD/USD" in investpy.get_currency_crosses_list()

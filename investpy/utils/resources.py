@@ -33,8 +33,16 @@ def load_registry(filename):
     # dtype even when the base registry's same column is string-typed (e.g. Chinese
     # A-share tickers like "688256"). Align to the base dtype so merged values are
     # consistent and don't leak int objects into what callers expect to be strings.
+    # For non-numeric base columns we coerce to `str` explicitly rather than via
+    # `.astype(base[column].dtype)`: under pandas <3, text columns infer dtype
+    # "object", and casting an int64 column to "object" leaves Python ints in
+    # place instead of stringifying them.
     for column in base.columns:
-        if column in custom.columns and base[column].dtype != custom[column].dtype:
+        if column not in custom.columns:
+            continue
+        if pd.api.types.is_numeric_dtype(base[column]):
             custom[column] = custom[column].astype(base[column].dtype)
+        else:
+            custom[column] = custom[column].astype(str)
     merged = pd.concat([base, custom], ignore_index=True)
     return merged.drop_duplicates(subset=["id"], keep="last").reset_index(drop=True)

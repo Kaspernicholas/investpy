@@ -226,4 +226,10 @@ def index_countries_as_list():
 
     """
 
-    return [value["country_name"] for value in cst.INDEX_COUNTRIES]
+    countries = [value["country_name"] for value in cst.INDEX_COUNTRIES]
+    seen = set(countries)
+    for country in load_registry("indices.csv")["country"].tolist():
+        if country and country not in seen:
+            countries.append(country)
+            seen.add(country)
+    return countries
