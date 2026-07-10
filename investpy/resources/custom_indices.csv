@@ -1,0 +1,4 @@
+country,name,full_name,tag,id,symbol,currency,class,market
+united kingdom,Baltic Dry Index,Baltic Dry Index,baltic-dry,940793,BADI,USD,additional_indices,world_indices
+china,SSE Star 50,SSE Star 50 Index,star-50,1164137,STAR50,CNY,major_indices,world_indices
+world,MSCI Intl Emerging Market Currency,MSCI Intl Emerging Market Currency,msci-intl-emerging-market-currency,996372,MIEM00000CUS,USD,additional_indices,global_indices
