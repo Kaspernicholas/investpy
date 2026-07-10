@@ -1,4 +1,23 @@
 import investpy
+import pytest
+
+_RECENT = ("01/06/2026", "10/07/2026")
+
+
+@pytest.mark.network
+@pytest.mark.parametrize("fn,args", [
+    (investpy.get_currency_cross_historical_data, ("XPT/USD", *_RECENT)),
+    (investpy.get_currency_cross_historical_data, ("XPD/USD", *_RECENT)),
+    (investpy.get_index_historical_data, ("Baltic Dry Index", "united kingdom", *_RECENT)),
+    (investpy.get_index_historical_data, ("SSE Star 50", "china", *_RECENT)),
+    (investpy.get_index_historical_data, ("MSCI Intl Emerging Market Currency", "world", *_RECENT)),
+    (investpy.get_stock_historical_data, ("688256", "china", *_RECENT)),
+    (investpy.get_stock_historical_data, ("688165", "china", *_RECENT)),
+    (investpy.get_stock_historical_data, ("603501", "china", *_RECENT)),
+])
+def test_direct_path_resolves_each_pin(fn, args):
+    df = fn(*args)
+    assert not df.empty and "Close" in df.columns
 
 
 def test_load_registry_includes_custom_currency_rows():
