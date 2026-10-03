@@ -7,7 +7,7 @@ from random import randint
 
 import pandas as pd
 import pytz
-from curl_cffi import requests
+from investpy.utils import transport
 from lxml.html import fromstring
 from unidecode import unidecode
 
@@ -314,7 +314,7 @@ def get_index_recent_data(
 
     url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-    req = requests.post(url, headers=head, data=params, impersonate="chrome136")
+    req = transport.post(url, headers=head, data=params)
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -627,7 +627,7 @@ def get_index_historical_data(
 
         url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-        req = requests.post(url, headers=head, data=params, impersonate="chrome136")
+        req = transport.post(url, headers=head, data=params)
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -817,7 +817,7 @@ def get_index_information(index, country, as_json=False):
         "Connection": "keep-alive",
     }
 
-    req = requests.get(url, headers=head, impersonate="chrome136")
+    req = transport.get(url, headers=head)
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -975,7 +975,7 @@ def get_indices_overview(country, as_json=False, n_results=100):
         + "-indices?&majorIndices=on&primarySectors=on&additionalIndices=on&otherIndices=on"
     )
 
-    req = requests.get(url, headers=head, impersonate="chrome136")
+    req = transport.get(url, headers=head)
 
     if req.status_code != 200:
         raise ConnectionError(

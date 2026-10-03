@@ -8,7 +8,7 @@ from random import randint
 import pandas as pd
 import pkg_resources
 import pytz
-from curl_cffi import requests
+from investpy.utils import transport
 from lxml.html import fromstring
 from unidecode import unidecode
 
@@ -281,7 +281,7 @@ def get_crypto_recent_data(crypto, as_json=False, order="ascending", interval="D
 
     url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-    req = requests.post(url, headers=head, data=params, impersonate="chrome136")
+    req = transport.post(url, headers=head, data=params)
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -592,7 +592,7 @@ def get_crypto_historical_data(
 
         url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-        req = requests.post(url, headers=head, data=params, impersonate="chrome136")
+        req = transport.post(url, headers=head, data=params)
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -791,7 +791,7 @@ def get_crypto_information(crypto, as_json=False):
         "Connection": "keep-alive",
     }
 
-    req = requests.get(url, headers=head, impersonate="chrome136")
+    req = transport.get(url, headers=head)
 
     if req.status_code != 200:
         raise ConnectionError(
@@ -900,7 +900,7 @@ def get_cryptos_overview(as_json=False, n_results=100):
 
     url = "https://www.investing.com/crypto/currencies"
 
-    req = requests.get(url, headers=header, impersonate="chrome136")
+    req = transport.get(url, headers=header)
 
     root = fromstring(req.text)
     table = root.xpath(".//table[contains(@class, 'allCryptoTlb')]/tbody/tr")
@@ -983,7 +983,7 @@ def get_cryptos_overview(as_json=False, n_results=100):
 
         url = "https://www.investing.com/crypto/Service/LoadCryptoCurrencies"
 
-        req = requests.post(url=url, headers=header, data=params)
+        req = transport.post(url=url, headers=header, data=params)
 
         root = fromstring(req.json()["html"])
         table = root.xpath(".//tr")

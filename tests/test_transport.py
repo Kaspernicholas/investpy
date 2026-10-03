@@ -66,3 +66,27 @@ def test_curl_transport_passes_impersonate(monkeypatch):
     assert seen["get"] == (
         "http://b", {"headers": {"H": "2"}, "params": {"q": 3}, "impersonate": "chrome136"}
     )
+
+
+def test_historical_data_goes_through_transport():
+    """A recorded transport sees the HistoricalDataAjax POST; investpy must not
+    reach curl_cffi directly."""
+    import investpy
+
+    class _Canned(_Recorder):
+        status_code = 200
+
+        def post(self, url, headers, data=None, params=None):
+            super().post(url, headers, data, params)
+            raise RuntimeError("stop-here")
+
+    canned = _Canned()
+    transport.set_transport(canned)
+    try:
+        try:
+            investpy.get_currency_cross_historical_data("EUR/USD", "01/06/2026", "10/06/2026")
+        except RuntimeError as e:
+            assert str(e) == "stop-here"
+    finally:
+        transport.reset_transport()
+    assert canned.calls and canned.calls[0][1].endswith("/instruments/HistoricalDataAjax")

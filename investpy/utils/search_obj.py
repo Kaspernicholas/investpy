@@ -7,7 +7,7 @@ from random import randint
 
 import pandas as pd
 import pytz
-from curl_cffi import requests
+from investpy.utils import transport
 from lxml.html import fromstring
 
 from .constant import FUNDS_INTERVAL_FILTERS, INTERVAL_FILTERS, OUTDATED2UPDATED
@@ -211,7 +211,7 @@ class SearchObj(object):
             "Connection": "keep-alive",
         }
 
-        req = requests.get(url, headers=headers, impersonate="chrome136")
+        req = transport.get(url, headers=headers)
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -363,7 +363,7 @@ class SearchObj(object):
 
         url = "https://www.investing.com/instruments/Service/GetTechincalData"
 
-        req = requests.post(url, headers=headers, data=params)
+        req = transport.post(url, headers=headers, data=params)
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -425,7 +425,7 @@ class SearchObj(object):
             "Connection": "keep-alive",
         }
 
-        req = requests.get(url, headers=headers)
+        req = transport.get(url, headers=headers)
 
         if req.status_code != 200:
             raise ConnectionError(
@@ -551,7 +551,7 @@ class SearchObj(object):
 
         url = "https://www.investing.com/instruments/HistoricalDataAjax"
 
-        req = requests.post(url, headers=headers, data=params, impersonate="chrome136")
+        req = transport.post(url, headers=headers, data=params)
 
         if req.status_code != 200:
             raise ConnectionError(
